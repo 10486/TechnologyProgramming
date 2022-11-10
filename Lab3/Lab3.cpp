@@ -4,45 +4,57 @@
 #define _USE_MATH_DEFINES
 #include <iostream>
 #include <math.h>
+
+// Структура которая описывает точку на плоскости
 struct Point {
     double x, y;
 };
+
+// Класс который описывает вектор на плоскости
 class Vector {
     private:
         Point p1, p2;
     public:
+        // Конструктор класса
         Vector(Point p1, Point p2) {
             this->p1 = p1;
             this->p2 = p2;
         }
+        // Оператор скалярного умножения векторов
         double operator *(Vector *v) {
-            return this->get_x() * v->get_x() + this->get_y() * v->get_y();
+            return get_x() * v->get_x() + get_y() * v->get_y();
         }
+        // Оператор разворота вектора
         double operator -() {
             Point tmp = p1;
-            this->p1 = this->p2;
+            this->p1 = p2;
             this->p2 = tmp;
         }
+        // Получение длинны
         double get_length() {
-            return sqrt(pow(this->p1.x - this->p2.x, 2) + pow(this->p1.y - this->p2.y, 2));
+            return sqrt(pow(p1.x - p2.x, 2) + pow(p1.y - p2.y, 2));
         }
+        // Проекция по x
         double get_x() {
-            return this->p2.x - this->p1.x;
+            return p2.x - p1.x;
         }
+        // Проекция по y
         double get_y() {
-            return this->p2.y - this->p1.y;
+            return p2.y - p1.y;
         }
+        // Получаем угол между векторами в радианах
         double get_angle(Vector* v) {
-            return acos((*this * v) / (this->get_length() * v->get_length()));
+            return acos((*this * v) / (get_length() * v->get_length()));
         }
-
+        // Получаем расстояние от точки до вектора
         double get_h_length(Point p) {
-            double dx = this->get_x();
-            double dy = this->get_y();
-            return abs(dy * p.x - dx * p.y + this->p1.y * this->p2.x - this->p2.y * this->p1.x) / sqrt(pow(dy, 2) + pow(dx, 2));
+            double dx = get_x();
+            double dy = get_y();
+            return abs(dy * p.x - dx * p.y + p1.y * p2.x - p2.y * p1.x) / sqrt(pow(dy, 2) + pow(dx, 2));
         }
         
 };
+// Радиус описанной окружности
 double get_r(Point p1, Point p2, Point p3) {
     Vector *a, *b, *c;
     double a_len, b_len, c_len;
@@ -56,6 +68,7 @@ double get_r(Point p1, Point p2, Point p3) {
     double p = (a_len + b_len + c_len) / 2;
     return (a_len * b_len * c_len) / (4 * sqrt(p * (p - a_len) * (p - b_len) * (p - c_len)));
 }
+// Получаем тип треугольника
 int get_type(Point a_p, Point b_p, Point c_p) {
     Vector* a, * b, * c;
     double a_angle, b_angle, c_angle;
