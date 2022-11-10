@@ -7,38 +7,42 @@ class Matrix {
         double** matrix;
         int height, width;
         Matrix(double** matrix, int height, int width) {
+            // Конструктор класса
             this->matrix = matrix;
             this->height = height;
             this->width = width;
         }
         double* get_chars() {
-            double* chars = new double[this->width];
+            // Получаем характеристический вектор для матрицы
+            double* chars = new double[width];
             double col_char;
-            for (size_t i = 0; i < this->width; i++)
+            for (size_t i = 0; i < width; i++)
             {
                 col_char = 0;
-                for (size_t j = 0; j < this->height; j++)
+                for (size_t j = 0; j < height; j++)
                 {
-                    col_char += this->matrix[i][j] > 0 ? 0 : abs(this->matrix[i][j]);
+                    col_char += matrix[i][j] > 0 ? 0 : abs(matrix[i][j]);
                 }
                 chars[i] = col_char;
             }
             return chars;
         }
         void recombine_cols() {
-            double* chars = this->get_chars();
+            // Перемещаем колонки
+            double* chars = get_chars();
             double* tmp_matrix;
             double tmp;
             int item;
-            for (int counter = 1; counter < this->width; counter++)
+            // Сортировка вставками
+            for (int counter = 1; counter < width; counter++)
             {
                 tmp = chars[counter];
-                tmp_matrix = this->matrix[counter];
+                tmp_matrix = matrix[counter];
                 item = counter - 1;
                 while (item >= 0 && chars[item] > tmp)
                 {
-                    this->matrix[item + 1] = this->matrix[item];
-                    this->matrix[item] = tmp_matrix;
+                    matrix[item + 1] = matrix[item];
+                    matrix[item] = tmp_matrix;
                     chars[item + 1] = chars[item];
                     chars[item] = tmp;
                     item--;
@@ -46,23 +50,25 @@ class Matrix {
             }
         }
         double sum_cols_with_negatives() {
-            double* chars = this->get_chars();
+            // Получаем сумму по всем колонкам с отрицательными числами
+            double* chars = get_chars();
             double sum = 0;
-            for (size_t i = 0; i < this->width; i++)
+            for (size_t i = 0; i < width; i++)
             {
                 if (chars[i] > 0) {
-                    for (size_t j = 0; j < this->height; j++)
+                    for (size_t j = 0; j < height; j++)
                     {
-                        sum += this->matrix[i][j];
+                        sum += matrix[i][j];
                     }
                 }
             }
-            delete chars;
+            delete[] chars;
             return sum;
         }
 };
 
 void fill_randomly(double*** matrix, int width, int height, double from, double to) {
+    // Заполняем матрицу рандомными числами
     std::random_device dev;
     std::mt19937 rng(dev());
     std::uniform_real_distribution<double> dist(from, to - 1); // Полуинтервал [from,to)
@@ -82,6 +88,7 @@ int main()
     int width, height;
     double from, to, ** values;
     bool fill_random = true;
+    // иф не нужен в блок схеме, просто чтение данных из файла
     if (DEBUG) {
         width = 10;
         height = 10;
@@ -104,6 +111,7 @@ int main()
     {
         values[i] = new double[height];
     }
+    // Заполнение матрицы(вручную или ранодмными числами)
     if (fill_random) {
 
         fill_randomly(&values, width, height, from, to);
@@ -121,6 +129,8 @@ int main()
 
     Matrix* matrix = new Matrix(values, height, width);
     double* data = matrix->get_chars();
+
+    //Выводим характеристический вектор до и после перестановки колонок
     for (size_t i = 0; i < width; i++)
     {
         std::cout << data[i] << " ";
@@ -132,6 +142,7 @@ int main()
     {
         std::cout << data[i] << " ";
     }
+    // Выводим сумму по всем колонкам с отрицательными числами
     std::cout << std::endl << matrix->sum_cols_with_negatives();
 }
 

@@ -6,11 +6,13 @@ class Vector {
     public:
         int start, size;
         Vector(int size=10, int start=0) {
+            // Конструктор
             this->start = start;
             this->size = size;
             storage = new int[size];
         }
         int& operator[](int idx) {
+            // Оператор взятия по индексу
             if (idx<start || idx>(start+size)) {
                 throw std::runtime_error("Index out of bounds");
             }
@@ -18,6 +20,7 @@ class Vector {
             return storage[tmp];
         }
         Vector* operator+(Vector other) {
+            // Сложение векторов и возврат нового вектора(суммы)
             if (other.start != start || other.size != size) {
                 throw std::runtime_error("Vectors bounds not same");
             }
@@ -29,6 +32,7 @@ class Vector {
             return result;
         }
         Vector* operator-(Vector other) {
+            // Вычитание векторов и возврат нового вектора(разности)
             if (other.start != start || other.size != size) {
                 throw std::runtime_error("Vectors bounds not same");
             }
@@ -40,6 +44,7 @@ class Vector {
             return result;
         }
         Vector* operator*(int value) {
+            // Оператор умножения на константу
             Vector* result = new Vector(size);
             for (size_t i = 0; i < size; i++)
             {
@@ -48,6 +53,7 @@ class Vector {
             return result;
         }
         Vector* operator/(int value) {
+            // Оператор деления на константу
             Vector* result = new Vector(size);
             for (size_t i = 0; i < size; i++)
             {
@@ -62,8 +68,7 @@ int main()
 {
     setlocale(LC_ALL, "Russian");
     int size, start;
-    
-    
+
     std::cout << "Введите размер первого массива и начало отсчета индексов (через пробел): ";
     std::cin >> size >> start;
     std::cout << "Введите элементы массива (через пробел): ";
@@ -110,23 +115,14 @@ int main()
         case 4:
             return 0;
         default:
-            result = v1;
+            throw std::runtime_error("Wrong argument");
             break;
         }
         for (size_t i = 0; i < result->size; i++)
         {
             std::cout << (*result)[result->start + i] << " ";
         }
+        delete result;
         std::cout << std::endl;
     } while (true);
-    auto v3 = new Vector(10);
-    for (size_t i = 0; i < 10; i++)
-    {
-        (*v3)[i] = i;
-    }
-    auto v4 = (*v3)/2;
-    for (size_t i = 0; i < 10; i++)
-    {
-        std::cout << (*v4)[i] << " ";
-    }
 }

@@ -1,6 +1,6 @@
 #include <string>
 #include <fstream>
-
+// Получение вектора из матрицы
 double* get_vec_x(double** matrix, int n) {
 	double dot_prod;
 	double* result = new double[n];
@@ -18,6 +18,7 @@ double* get_vec_x(double** matrix, int n) {
 				max_ind = j;
 			}
 		}
+		// Скалярное произведение строки на столбец с максимальным элементом в этой строке 
 		for (size_t j = 0; j < n; j++)
 		{
 			dot_prod += matrix[j][max_ind] * matrix[i][j];
@@ -28,6 +29,7 @@ double* get_vec_x(double** matrix, int n) {
 }
 
 double** read_file(std::string filename, int n) {
+	// Читаем матрицу из файла
 	double** matrix = new double* [n];
 	if (!matrix)throw std::runtime_error("Memory hasn't been alloceted");
 	std::ifstream in(filename);
@@ -48,6 +50,7 @@ double** read_file(std::string filename, int n) {
 	return matrix;
 }
 void write_file(double* vector, std::string filename, int n) {
+	// Пишем вектор в файл
 	std::ofstream out;
 	out.open(filename);
 	if (out.is_open())
@@ -60,13 +63,14 @@ void write_file(double* vector, std::string filename, int n) {
 }
 
 void step2(std::string input_filename, std::string output_filename, int size) {
+
 	double** matrix = read_file(input_filename, size);
 	double* vector = get_vec_x(matrix, size);
 	for (size_t i = 0; i < size; i++)
 	{
-		delete matrix[i];
+		delete[] matrix[i];
 	}
-	delete matrix;
+	delete[] matrix;
 	write_file(vector, output_filename, size);
-	delete vector;
+	delete[] vector;
 }

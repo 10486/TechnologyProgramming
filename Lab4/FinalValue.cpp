@@ -3,14 +3,16 @@
 #include <fstream>
 
 double get_g(double* x, int n) {
+	// Функция для вычисления итогового значения
 	double prod = 1;
-	for (size_t i = 0; i < n - 1; i++)
+	for (int i = 0; i < (n - 1); i++)
 	{
 		prod *= 1 / (abs(x[i]) + 1) + x[i + 1];
 	}
 	return prod;
 }
 double* read_file(std::string filename, int n) {
+	// Читаем вектор
 	double* vector = new double[n];
 	if (!vector)throw std::runtime_error("Memory hasn't been alloceted");
 	std::ifstream in(filename);
@@ -25,6 +27,7 @@ double* read_file(std::string filename, int n) {
 	return vector;
 }
 void write_file(double value, std::string filename, int n) {
+	// Пишем значение
 	std::ofstream out;
 	out.open(filename);
 	if (out.is_open())
