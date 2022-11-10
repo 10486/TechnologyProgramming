@@ -38,8 +38,8 @@ double ref_get_g(double** y, int* n) {
     }
     return g;
 }
-
-double a, b, *y;
+// Объявление глобальных переменных для функций
+double* glob_Yi, a, b;
 int i, N;
 double global_get_f() {
     
@@ -52,8 +52,8 @@ double global_get_f() {
 double global_get_g() {
     double y_abs, z, g = 0;
     for (int i = 0; i < N; i++) {
-        y_abs = abs(y[i]);
-        z = y_abs > 1 ? 1 / y[i] : y[i];
+        y_abs = abs(glob_Yi[i]);
+        z = y_abs > 1 ? 1 / glob_Yi[i] : glob_Yi[i];
         g += pow(z, 2);
     }
     return g;
@@ -63,17 +63,19 @@ const bool DEBUG = false;
 int main()
 {
     setlocale(LC_ALL, "Russian");
+    //Переменные для функций
     double amin, amax, da, bmin, bmax, ba, u, temp;
     int n;  
-    double* data;
+    double* Yi;
+    //переменная выбора подхода передачи данных в функцию
     unsigned int approach;
-    bool flag = true;
+    bool flag = true;//Флаг выхода из цикла
     std::cout << std::fixed;
     std::cout << std::setprecision(2);
-    std::cout << "a     | b     | i     | Yi    | U    " << std::endl;
-    
+    //Цикл для продолжения работы после первого раза
     do
     {
+        //Этот иф можно убрать из блок схемы и оставить только ввод значений из блока else
         if (DEBUG) {
             approach = 0;
             amin = 1;
@@ -108,12 +110,18 @@ int main()
             }
         
         }
-        
-
+        std::cout << std::setw(10) << "a" << "|";
+        std::cout << std::setw(10) << "b" << "|"; 
+        std::cout << std::setw(10) << "i" << "|"; 
+        std::cout << std::setw(10) << "Yi" << "|"; 
+        std::cout << std::setw(10) << "U" << "|"; 
+        std::cout << std::endl;
+        Yi = new double[n];
+        // Выбираем подход
         switch (approach)
         {
-        case 0:
-            data = new double[n];
+        case 0:    
+            // Передача по значению
             for (double a = amin; a <= amax; a += da)
             {
                 for (double b = bmin; b <= bmax; b += ba)
@@ -122,35 +130,42 @@ int main()
                     for (size_t i = 1; i <= n; i++)
                     {
                         temp = get_f(a, b, i);
-                        data[i-1] = temp;
-                        if (n == i) u = get_g(data, n);
-                        std::cout << a << " | " << b << " | " << i << " | " << temp << " | " << u << std::endl;
+                        Yi[i-1] = temp;
+                        if (n == i) u = get_g(Yi, n);
+                        std::cout << std::setw(10) << a << " | ";
+                        std::cout << std::setw(10) << b << " | ";
+                        std::cout << std::setw(10) << i << " | ";
+                        std::cout << std::setw(10) << temp << " | ";
+                        std::cout << std::setw(10) << u << std::endl;
                     }
                 }
             }
-            delete data;
             break;
         case 1:
+            //Передача через глобальные переменные
+            glob_Yi = Yi;
             N = n;
-            y = new double[N];
             for (a = amin; a <= amax; a += da)
             {
                 for (b = bmin; b <= bmax; b += ba)
                 {
                     u = 0;
-                    for (i = 1; i <= N; i++)
+                    for (i = 1; i <= n; i++)
                     {
                         temp = global_get_f();
-                        y[i-1] = temp;
+                        glob_Yi[i-1] = temp;
                         if (n == i) u = global_get_g();
-                        std::cout << a << " | " << b << " | " << i << " | " << temp << " | " << u << std::endl;
+                        std::cout << std::setw(10) << a << " | ";
+                        std::cout << std::setw(10) << b << " | ";
+                        std::cout << std::setw(10) << i << " | ";
+                        std::cout << std::setw(10) << temp << " | ";
+                        std::cout << std::setw(10) << u << std::endl;
                     }
                 }
             }
-            delete y;
             break;
         case 2:
-            data = new double[n];
+            //Передача по ссылке
             for (double a = amin; a <= amax; a += da)
             {
                 for (double b = bmin; b <= bmax; b += ba)
@@ -159,18 +174,22 @@ int main()
                     for (int i = 1; i <= n; i++)
                     {
                         temp = ref_get_f(&a, &b, &i);
-                        data[i-1] = temp;
-                        if (n == i) u = ref_get_g(&data, &n);
-                        std::cout << a << " | " << b << " | " << i << " | " << temp << " | " << u << std::endl;
+                        Yi[i-1] = temp;
+                        if (n == i) u = ref_get_g(&Yi, &n);
+                        std::cout << std::setw(10) << a << " | ";
+                        std::cout << std::setw(10) << b << " | ";
+                        std::cout << std::setw(10) << i << " | ";
+                        std::cout << std::setw(10) << temp << " | ";
+                        std::cout << std::setw(10) << u << std::endl;
                     }
                 }
             }
-            delete data;
             break;
         default:
             break;
         }
-
+        // Чистим память
+        delete[] Yi;
         std::cout << "Продожить? (1-Да или 0-Нет) ";
         std::cin >> flag;
     } while (flag);
